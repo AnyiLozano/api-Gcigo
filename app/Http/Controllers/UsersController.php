@@ -265,12 +265,29 @@ class UsersController extends Controller
 
     public function recoverPassword(Request $request)
     {
-        $user = User::where("email", $request->email)->first();
-        $user->password = Hash::make($request->password);
-        $user->save();
+        $status = false;
+        $result = null;
+        DB::beginTransaction();
+        try {
+            $user = User::where('email', $request->email)->first();
+            $user->password = Hash::make($request->password);
+            $user->save();
 
-        return [
-            'data' => 'se cambio la contraseña.'
-        ];
+            $status = true;
+            DB::commit();
+        } catch (\Throwable $th) {
+            $result = $th->getMessage();
+            DB::rollback();
+        }if($status){
+            return [
+                'transaction' => ['status' => true],
+                'data' => 'se actualizo el usuario'
+            ];
+        }else{
+            return [
+                'transaction' => ['status' => false],
+                'data' => $result
+            ];
+        }
     }
 }
