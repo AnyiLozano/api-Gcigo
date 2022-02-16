@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('users')->group(function(){
+Route::prefix('users')->group(function () {
     Route::post('/newUser', 'UsersController@newUser');
     Route::post('/login', 'UsersController@login');
     Route::get('/getUsers', 'UsersController@getUsers')->middleware('auth:api');
